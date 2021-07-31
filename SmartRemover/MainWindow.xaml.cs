@@ -11,12 +11,13 @@ using Microsoft.Win32;
 using System.Windows.Media;
 namespace SmartRemover
 {
-    
+
     public partial class MainWindow : Window
     {
         public string ApplicationName { get; set; }
         public static string TempDir;
 
+        //Brushes that changes with Light or Dark theme
         public Brush BackgroundColorBrush { get; private set; }
         public Brush ButtonBackgroundColorBrush { get; private set; }
         public Brush SecondBackgroundColorBrush { get; private set; }
@@ -26,13 +27,16 @@ namespace SmartRemover
         public MainWindow()
         {
             InitializeComponent();
+            //Getting Temp directory in AppData
             TempDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //Reading package.json to get the app name
             string js = System.IO.File.ReadAllText(TempDir + "\\package.json");
             Foo f = JsonConvert.DeserializeObject<Foo>(js);
             ApplicationName = f.Name;
             InitTheme();
         }
 
+        //function that gets windows'default theme (Light theme for windows 8.1 and older)
         private void InitTheme()
         {
             bool AppsUseLightTheme = true;
@@ -48,7 +52,7 @@ namespace SmartRemover
                     }
                 }
             }
-            catch (Exception ex)  
+            catch (Exception ex)
             {
                 Debug.WriteLine("Exception: " + ex.Message);
             }
@@ -73,11 +77,13 @@ namespace SmartRemover
             this.DataContext = this;
         }
 
+        //Click event for close button
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
+        //Click event for uninstall button
         private void btnDownload_Click(object sender, RoutedEventArgs e)
         {
             TempDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -85,26 +91,28 @@ namespace SmartRemover
             Foo f = JsonConvert.DeserializeObject<Foo>(js);
             DirectoryInfo dir = new DirectoryInfo(TempDir);
 
-                if(dir.Exists)
+            //Delete all application's files
+            if (dir.Exists)
+            {
+
+                foreach (FileInfo file in dir.GetFiles())
                 {
-                    
-                    foreach(FileInfo file in dir.GetFiles())
-                    {
                     try
                     {
                         file.Delete();
                     }
                     catch { }
-                    }
-                    foreach(DirectoryInfo dirt in dir.GetDirectories())
-                    {
-                        dirt.Delete(true);
-                    }
                 }
-               
-            CreateShortcut(f.Name, Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
-            CreateShortcut(f.Name, Environment.GetFolderPath(Environment.SpecialFolder.StartMenu));
-            CreateShortcut(f.Name + " Uninstaller", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu));
+                foreach (DirectoryInfo dirt in dir.GetDirectories())
+                {
+                    dirt.Delete(true);
+                }
+            }
+
+            //Delete all shortcuts and registery keys of the app
+            DeleteShortcut(f.Name, Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+            DeleteShortcut(f.Name, Environment.GetFolderPath(Environment.SpecialFolder.StartMenu));
+            DeleteShortcut(f.Name + " Uninstaller", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu));
             var a = Registry.LocalMachine.OpenSubKey("SOFTWARE", true).OpenSubKey("Microsoft", true)
                 .OpenSubKey("Windows", true).OpenSubKey("CurrentVersion", true).OpenSubKey("Uninstall", true);
             a.DeleteSubKey(ApplicationName);
@@ -112,33 +120,35 @@ namespace SmartRemover
             Application.Current.Shutdown();
         }
 
-        
+        //Class of package.json
         private class Foo
         {
-            public string Name { get;  set; }
+            public string Name { get; set; }
             public string MainExe { get; set; }
             public string VersionName { get; set; }
             public int VersionCode { get; set; }
             public string Date { get; set; }
         }
 
-
-        public static void CreateShortcut(string shortcutName, string shortcutPath)
+        //Function that deletes shortcut
+        public static void DeleteShortcut(string shortcutName, string shortcutPath)
         {
             string shortcutLocation = System.IO.Path.Combine(shortcutPath, shortcutName + ".lnk");
             try
-            { 
-            File.Delete(shortcutLocation);
+            {
+                File.Delete(shortcutLocation);
             }
             catch { }
         }
 
+        //Events that drags the window
         private void Border_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             DragMove();
         }
     }
 
+    //Deleting the Uninstaller after closing
     class AutoDeleter
     {
         public static bool WindowsIsClosing { get; protected set; }
@@ -162,7 +172,7 @@ namespace SmartRemover
 
             string WinTmpDir = Path.GetTempPath();
             int nm = 0;
-            while(File.Exists(String.Format(model, WinTmpDir, nm.ToString())))
+            while (File.Exists(String.Format(model, WinTmpDir, nm.ToString())))
             {
                 nm++;
             }
@@ -189,9 +199,8 @@ namespace SmartRemover
         {
             string file_name = Assembly.GetEntryAssembly().Location;
 
-            if(WindowsIsClosing)
+            if (WindowsIsClosing)
             {
-                /* Si Windows est en train de se fermer, on va se supprimer au prochain redémarrage */
                 MoveFileEx(file_name, null, MoveFileFlags.MOVEFILE_DELAY_UNTIL_REBOOT);
             }
             else
@@ -210,16 +219,16 @@ namespace SmartRemover
 
                     System.Threading.Thread.Sleep(1000);
                 }
-                while(try_count >= 0 && fi == null);
+                while (try_count >= 0 && fi == null);
 
-                if(try_count < 0)
+                if (try_count < 0)
                 {
-                   
+
                     return;
                 }
 
-                if(fi == null)
-                    fi = new FileStream(GetTmpBatName(), FileMode.Create); /* erreur possible, si le do a échoué ... */
+                if (fi == null)
+                    fi = new FileStream(GetTmpBatName(), FileMode.Create);
 
                 string name = fi.Name;
 
