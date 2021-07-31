@@ -8,8 +8,7 @@ using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
 using Microsoft.Win32;
-
-
+using System.Windows.Media;
 namespace SmartRemover
 {
     
@@ -17,6 +16,13 @@ namespace SmartRemover
     {
         public string ApplicationName { get; set; }
         public static string TempDir;
+
+        public Brush BackgroundColorBrush { get; private set; }
+        public Brush ButtonBackgroundColorBrush { get; private set; }
+        public Brush SecondBackgroundColorBrush { get; private set; }
+        public Brush SeparatorColorBrush { get; private set; }
+        public Brush ForegroundColorBrush { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -24,6 +30,46 @@ namespace SmartRemover
             string js = System.IO.File.ReadAllText(TempDir + "\\package.json");
             Foo f = JsonConvert.DeserializeObject<Foo>(js);
             ApplicationName = f.Name;
+            InitTheme();
+        }
+
+        private void InitTheme()
+        {
+            bool AppsUseLightTheme = true;
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    if (key != null && key.GetValue("AppsUseLightTheme") != null)
+                    {
+                        Int64 value = Convert.ToInt64(key.GetValue("AppsUseLightTheme").ToString());
+                        if (value == 0)
+                            AppsUseLightTheme = false;
+                    }
+                }
+            }
+            catch (Exception ex)  
+            {
+                Debug.WriteLine("Exception: " + ex.Message);
+            }
+
+            if (AppsUseLightTheme)
+            {
+                this.BackgroundColorBrush = new SolidColorBrush(Color.FromRgb(249, 249, 249));
+                this.ButtonBackgroundColorBrush = new SolidColorBrush(Color.FromRgb(249, 249, 249));
+                this.SeparatorColorBrush = new SolidColorBrush(Color.FromRgb(229, 229, 229));
+                this.SecondBackgroundColorBrush = new SolidColorBrush(Color.FromRgb(238, 238, 238));
+                this.ForegroundColorBrush = new SolidColorBrush(Color.FromRgb(16, 16, 16));
+            }
+            else
+            {
+                this.BackgroundColorBrush = new SolidColorBrush(Color.FromRgb(32, 32, 32));
+                this.ButtonBackgroundColorBrush = new SolidColorBrush(Color.FromRgb(52, 52, 52));
+                this.SeparatorColorBrush = new SolidColorBrush(Color.FromRgb(48, 48, 48));
+                this.SecondBackgroundColorBrush = new SolidColorBrush(Color.FromRgb(39, 39, 39));
+                this.ForegroundColorBrush = new SolidColorBrush(Color.FromRgb(250, 250, 250));
+            }
+
             this.DataContext = this;
         }
 
@@ -87,7 +133,10 @@ namespace SmartRemover
             catch { }
         }
 
-        
+        private void Border_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
     }
 
     class AutoDeleter
