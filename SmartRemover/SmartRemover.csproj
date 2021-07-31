@@ -112,6 +112,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Resource Include="SegoeIcons.ttf" />
+    <Resource Include="SegUIVar.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
