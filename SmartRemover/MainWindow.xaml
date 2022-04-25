@@ -12,6 +12,8 @@
                 <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.3" Direction="225" />
             </Border.Effect>
             <Grid>
+                <Label Foreground="{Binding ForegroundColorBrush}" VerticalContentAlignment="Center" Content="Smart Installer" FontFamily="./#Segoe UI Variable Display" FontSize="20" FontWeight="Normal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="310,8,0,0" Height="32" />
+                <Image Source="smart_installer.png" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="278,12,0,0"/>
                 <Button Click="Button_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Height="31" Width="46" FontSize="19" BorderBrush="{x:Null}" OpacityMask="#FF464646">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
@@ -36,14 +38,13 @@
                     </Button.Style>
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="./#Segoe Fluent Icons" FontSize="15" TextOptions.TextRenderingMode="Grayscale" Height="16" Width="24"><Run Text=" "/><Run Text="&#xEDAE;"/></TextBlock>
                 </Button>
-                <Label Foreground="{Binding ForegroundColorBrush}" Content="Smart Installer" FontFamily="./#Segoe UI Variable Small Light" VerticalContentAlignment="Center" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                <Label Foreground="{Binding ForegroundColorBrush}" Content="Programme de désinstallation de" VerticalContentAlignment="Top" Height="120" FontFamily="./#Segoe UI Variable Display" FontSize="26" FontWeight="Normal" VerticalAlignment="Center" HorizontalAlignment="Center"  />
+                <Label Foreground="{Binding ForegroundColorBrush}" Content="Removing program of" VerticalContentAlignment="Top" Height="120" FontFamily="./#Segoe UI Variable Display" FontSize="26" FontWeight="Normal" VerticalAlignment="Center" HorizontalAlignment="Center"  />
                 <Label Foreground="{Binding ForegroundColorBrush}" Content="{Binding ApplicationName}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="50" FontFamily="./#Segoe UI Variable Display Semibold" VerticalAlignment="Center"  />
                 <Rectangle Fill="{Binding SeparatorColorBrush}" Margin="0,0,0,125" Height="1" VerticalAlignment="Bottom"/>
                 <Border Background="{Binding SecondBackgroundColorBrush}" BorderThickness="0" BorderBrush="Transparent" CornerRadius="0,0,8,8" VerticalAlignment="Bottom" Height="125">
                     <Grid>
-                        <Label x:Name="txt" Foreground="{Binding ForegroundColorBrush}" Content="Voulez vous vraiment désinstaller cette application?" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" FontSize="16" FontFamily="./#Segoe UI Variable Display" Margin="0,0,0,62"  />
-                        <Button FontFamily="./#Segoe UI Variable Display" Content="Désinstaller" Click="btnDownload_Click" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="40" Width="184" FontSize="19"  Foreground="{Binding ForegroundColorBrush}" Margin="10">
+                        <Label x:Name="txt" Foreground="{Binding ForegroundColorBrush}" Content="Would you really like to remove this app ?" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" FontSize="16" FontFamily="./#Segoe UI Variable Display" Margin="0,0,0,62"  />
+                        <Button FontFamily="./#Segoe UI Variable Display" Content="Remove" Click="btnDownload_Click" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="40" Width="184" FontSize="19"  Foreground="{Binding ForegroundColorBrush}" Margin="10">
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}">
                                     <Setter Property="Background" Value="{Binding ButtonBackgroundColorBrush}"/>

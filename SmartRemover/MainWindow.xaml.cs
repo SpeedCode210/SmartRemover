@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Microsoft.Win32;
 using System.Windows.Media;
 namespace SmartRemover
@@ -28,10 +28,10 @@ namespace SmartRemover
         {
             InitializeComponent();
             //Getting Temp directory in AppData
-            TempDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            TempDir = Path.GetDirectoryName(AppContext.BaseDirectory);
             //Reading package.json to get the app name
             string js = System.IO.File.ReadAllText(TempDir + "\\package.json");
-            Foo f = JsonConvert.DeserializeObject<Foo>(js);
+            ProgramData f = JsonSerializer.Deserialize<ProgramData>(js);
             ApplicationName = f.Name;
             InitTheme();
         }
@@ -86,9 +86,9 @@ namespace SmartRemover
         //Click event for uninstall button
         private void btnDownload_Click(object sender, RoutedEventArgs e)
         {
-            TempDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            TempDir = Path.GetDirectoryName(AppContext.BaseDirectory);
             string js = System.IO.File.ReadAllText(TempDir + "\\package.json");
-            Foo f = JsonConvert.DeserializeObject<Foo>(js);
+            ProgramData f = JsonSerializer.Deserialize<ProgramData>(js);
             DirectoryInfo dir = new DirectoryInfo(TempDir);
 
             //Delete all application's files
@@ -100,8 +100,7 @@ namespace SmartRemover
                     try
                     {
                         file.Delete();
-                    }
-                    catch { }
+                    }catch{ }
                 }
                 foreach (DirectoryInfo dirt in dir.GetDirectories())
                 {
@@ -121,7 +120,7 @@ namespace SmartRemover
         }
 
         //Class of package.json
-        private class Foo
+        private class ProgramData
         {
             public string Name { get; set; }
             public string MainExe { get; set; }
@@ -151,109 +150,21 @@ namespace SmartRemover
     //Deleting the Uninstaller after closing
     class AutoDeleter
     {
-        public static bool WindowsIsClosing { get; protected set; }
-
-        static AutoDeleter()
-        {
-            WindowsIsClosing = false;
-            Microsoft.Win32.SystemEvents.SessionEnding += delegate
-            {
-                WindowsIsClosing = true;
-            };
-            Microsoft.Win32.SystemEvents.SessionEnded += delegate
-            {
-                WindowsIsClosing = true;
-            };
-        }
-
-        static string GetTmpBatName()
-        {
-            const string model = "{0}\\DS_Unist{1}.bat";
-
-            string WinTmpDir = Path.GetTempPath();
-            int nm = 0;
-            while (File.Exists(String.Format(model, WinTmpDir, nm.ToString())))
-            {
-                nm++;
-            }
-
-            return String.Format(model, WinTmpDir, nm.ToString());
-        }
-
-        [Flags]
-        public enum MoveFileFlags
-        {
-            MOVEFILE_REPLACE_EXISTING = 0x00000001,
-            MOVEFILE_COPY_ALLOWED = 0x00000002,
-            MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004,
-            MOVEFILE_WRITE_THROUGH = 0x00000008,
-            MOVEFILE_CREATE_HARDLINK = 0x00000010,
-            MOVEFILE_FAIL_IF_NOT_TRACKABLE = 0x00000020
-        }
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool MoveFileEx(string lpExistingFileName, string lpNewFileName,
-           MoveFileFlags dwFlags);
-
         public static void AutoDeleterStart()
         {
-            string file_name = Assembly.GetEntryAssembly().Location;
+            string batchCommands = string.Empty;
+            string exeFileName = AppContext.BaseDirectory;
 
-            if (WindowsIsClosing)
-            {
-                MoveFileEx(file_name, null, MoveFileFlags.MOVEFILE_DELAY_UNTIL_REBOOT);
-            }
-            else
-            {
-                Environment.CurrentDirectory = Path.GetDirectoryName(MainWindow.TempDir);
+            batchCommands += "@ECHO OFF\n";                         // Do not show any output
+            batchCommands += "ping 127.0.0.1 > nul\n";              // Wait approximately 4 seconds (so that the process is already terminated)
+            batchCommands += "echo j | del /F ";                    // Delete the executeable
+            batchCommands += exeFileName + "\\* \n";
+            batchCommands += "rmdir /s /q \""+ exeFileName + "\"\n";
+            batchCommands += "echo j | del deleteMyProgram.bat";    // Delete this bat file
 
-                FileStream fi = null;
+            File.WriteAllText("deleteMyProgram.bat", batchCommands);
 
-                int try_count = 20;
-                do
-                {
-                    try
-                    { fi = new FileStream(GetTmpBatName(), FileMode.Create); }
-                    catch { }
-                    try_count--;
-
-                    System.Threading.Thread.Sleep(1000);
-                }
-                while (try_count >= 0 && fi == null);
-
-                if (try_count < 0)
-                {
-
-                    return;
-                }
-
-                if (fi == null)
-                    fi = new FileStream(GetTmpBatName(), FileMode.Create);
-
-                string name = fi.Name;
-
-                StreamWriter wr = new StreamWriter(fi, Encoding.Default);
-                wr.WriteLine("@echo off");
-                wr.WriteLine("REM DreamShield.IO.Utils AutoDeleter Bat");
-                wr.WriteLine("REM BatGenerator v 1.0");
-                wr.WriteLine();
-
-                wr.WriteLine(":del_process");
-                wr.WriteLine(String.Format("@if exist \"{0}\" del \"{0}\"", file_name));
-                wr.WriteLine(String.Format("@if exist \"{0}\" goto del_process", file_name));
-                wr.WriteLine();
-
-                wr.WriteLine(String.Format("del \"{0}\"", name));
-
-                wr.Flush();
-                fi.Flush();
-                fi.Close();
-
-                ProcessStartInfo info = new ProcessStartInfo();
-                info.WindowStyle = ProcessWindowStyle.Hidden;
-                info.FileName = name;
-                Process.Start(info);
-            }
+            Process.Start("deleteMyProgram.bat");
         }
     }
 }
