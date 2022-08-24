@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>false</SelfContained>
+		<ApplicationIcon>smart_installer.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<Company>SmartInstaller</Company>
+		<Product>SmartRemover</Product>
+		<Copyright>Copyright Raouf Ould Ali ©  2022</Copyright>
+		<PackageProjectUrl>https://github.com/SpeedCode210/SmartRemover</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/SpeedCode210/SmartRemover.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<AssemblyVersion>3.0</AssemblyVersion>
+		<FileVersion>3.0</FileVersion>
+	</PropertyGroup>
+
+	<Import Project="..\SmartRemover.Core\SmartRemover.Core.projitems" Label="Shared" />
+
+	<ItemGroup>
+		<None Remove="smart_installer.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="smart_installer.ico" />
+	</ItemGroup>
+
+</Project>

@@ -2,9 +2,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows;
 using System.Text.Json;
 using Microsoft.Win32;
@@ -23,6 +20,9 @@ namespace SmartRemover
         public Brush SecondBackgroundColorBrush { get; private set; }
         public Brush SeparatorColorBrush { get; private set; }
         public Brush ForegroundColorBrush { get; private set; }
+        public Brush AccentColorBrush { get; private set; }
+        public Brush ButtonContrastColorBrush { get; private set; }
+
 
         public MainWindow()
         {
@@ -36,7 +36,7 @@ namespace SmartRemover
             InitTheme();
         }
 
-        //function that gets windows'default theme (Light theme for windows 8.1 and older)
+        //function that gets windows's default theme (Light theme for windows 8.1 and older)
         private void InitTheme()
         {
             bool AppsUseLightTheme = true;
@@ -57,6 +57,8 @@ namespace SmartRemover
                 Debug.WriteLine("Exception: " + ex.Message);
             }
 
+            this.AccentColorBrush = GetAccentColor(AppsUseLightTheme);
+
             if (AppsUseLightTheme)
             {
                 this.BackgroundColorBrush = new SolidColorBrush(Color.FromRgb(249, 249, 249));
@@ -64,6 +66,7 @@ namespace SmartRemover
                 this.SeparatorColorBrush = new SolidColorBrush(Color.FromRgb(229, 229, 229));
                 this.SecondBackgroundColorBrush = new SolidColorBrush(Color.FromRgb(238, 238, 238));
                 this.ForegroundColorBrush = new SolidColorBrush(Color.FromRgb(16, 16, 16));
+                this.ButtonContrastColorBrush = Brushes.White;
             }
             else
             {
@@ -72,9 +75,38 @@ namespace SmartRemover
                 this.SeparatorColorBrush = new SolidColorBrush(Color.FromRgb(48, 48, 48));
                 this.SecondBackgroundColorBrush = new SolidColorBrush(Color.FromRgb(39, 39, 39));
                 this.ForegroundColorBrush = new SolidColorBrush(Color.FromRgb(250, 250, 250));
+                this.ButtonContrastColorBrush = Brushes.Black;
             }
 
             this.DataContext = this;
+        }
+
+        private static Brush GetAccentColor(bool light)
+        {
+            System.Drawing.Color systemAccent = System.Drawing.Color.FromArgb(255, SystemParameters.WindowGlassColor.R, SystemParameters.WindowGlassColor.G, SystemParameters.WindowGlassColor.B);
+
+            if (light)
+            {
+                if (systemAccent.GetBrightness() <= 0.5)
+                    return SystemParameters.WindowGlassBrush;
+                else
+                {
+                    var color = new HslColor(SystemParameters.WindowGlassColor);
+                    var color2 = new HslColor(color.h, color.s, 0.45f, color.a);
+                    return new SolidColorBrush(color2.ToRgb());
+                }
+            }
+            else
+            {
+                if (systemAccent.GetBrightness() >= 0.5)
+                    return SystemParameters.WindowGlassBrush;
+                else
+                {
+                    var color = new HslColor(SystemParameters.WindowGlassColor);
+                    var color2 = new HslColor(color.h, color.s, 0.65f, color.a);
+                    return new SolidColorBrush(color2.ToRgb());
+                }
+            }
         }
 
         //Click event for close button
@@ -112,9 +144,13 @@ namespace SmartRemover
             DeleteShortcut(f.Name, Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
             DeleteShortcut(f.Name, Environment.GetFolderPath(Environment.SpecialFolder.StartMenu));
             DeleteShortcut(f.Name + " Uninstaller", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu));
-            var a = Registry.LocalMachine.OpenSubKey("SOFTWARE", true).OpenSubKey("Microsoft", true)
+            try
+            {
+                var a = Registry.LocalMachine.OpenSubKey("SOFTWARE", true).OpenSubKey("Microsoft", true)
                 .OpenSubKey("Windows", true).OpenSubKey("CurrentVersion", true).OpenSubKey("Uninstall", true);
-            a.DeleteSubKey(ApplicationName);
+                a.DeleteSubKey(ApplicationName);
+            }
+            catch { }
             AutoDeleter.AutoDeleterStart();
             Application.Current.Shutdown();
         }

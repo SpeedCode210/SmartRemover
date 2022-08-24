@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.1.32414.318
+VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartRemover", "SmartRemover\SmartRemover.csproj", "{40F1377A-3DE4-426D-9048-C11DFBF28795}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SmartRemover.Core", "SmartRemover.Core\SmartRemover.Core.shproj", "{068A3B80-AA07-4E40-839B-EFEC3FDC0CB1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartRemover.NetCore", "SmartRemover.NetCore\SmartRemover.NetCore.csproj", "{A27FA1FD-E2F9-4776-8508-2EA995790B8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartRemover.NetFx", "SmartRemover.NetFx\SmartRemover.NetFx.csproj", "{BF9F7A16-045A-4815-8F72-9FC0B3978864}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +15,24 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{40F1377A-3DE4-426D-9048-C11DFBF28795}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40F1377A-3DE4-426D-9048-C11DFBF28795}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40F1377A-3DE4-426D-9048-C11DFBF28795}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40F1377A-3DE4-426D-9048-C11DFBF28795}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A27FA1FD-E2F9-4776-8508-2EA995790B8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A27FA1FD-E2F9-4776-8508-2EA995790B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A27FA1FD-E2F9-4776-8508-2EA995790B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A27FA1FD-E2F9-4776-8508-2EA995790B8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF9F7A16-045A-4815-8F72-9FC0B3978864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF9F7A16-045A-4815-8F72-9FC0B3978864}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF9F7A16-045A-4815-8F72-9FC0B3978864}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF9F7A16-045A-4815-8F72-9FC0B3978864}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {10101810-C64D-4B8E-B653-661D4D54A9C2}
+		SolutionGuid = {053362BB-D0C2-4B1F-B577-B971E2D39C7F}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		SmartRemover.Core\SmartRemover.Core.projitems*{068a3b80-aa07-4e40-839b-efec3fdc0cb1}*SharedItemsImports = 13
+		SmartRemover.Core\SmartRemover.Core.projitems*{a27fa1fd-e2f9-4776-8508-2ea995790b8f}*SharedItemsImports = 5
+		SmartRemover.Core\SmartRemover.Core.projitems*{bf9f7a16-045a-4815-8f72-9fc0b3978864}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
