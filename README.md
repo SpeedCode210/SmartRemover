@@ -11,11 +11,11 @@ There is no configuration to do on it, it uses the configuration files generated
 
 ## Requirements for the compilation
 
-- .NET SDK 6
+- .NET SDK 6 / .NET Framework Targeting Pack 4.7.2
 
 ## User requirements
 
-- .NET Desktop Runtime 6
+- .NET Desktop Runtime 6 / .NET Framework 4.x
 
 - Windows 7 or later
 
